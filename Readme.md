@@ -1,7 +1,7 @@
-# Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
+﻿# Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Анна Новикова](https://up.htmlacademy.ru/javascript/6/user/83457).
-* Наставник: `Неизвестно`.
+* Наставник: `отсутствует`.
 
 ---
 
