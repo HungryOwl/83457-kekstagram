@@ -76,10 +76,87 @@
      */
     _resizeConstraint: null,
 
+    /*
+     * Черный слой вокруг рамки
+     * @param {number} outerX
+     * @param {number} outerY
+     * @param {number} outerWidth
+     * @param {number} outerHeight
+     * @param {number} innerX
+     * @param {number} innerY
+     * @param {number} innerWidth
+     * @param {number} innerHeight
+     * @param {number} lineWidth
+     * @param {string} strokeStyle
+     * @param {string} fillStyle
+     * @param {Array} LineDash
+     */
+    _drawRectangle: function(outerX, outerY, outerWidth, outerHeight, innerX, innerY, innerWidth, innerHeight, lineWidth, strokeStyle, fillStyle, LineDash) {
+      this._ctx.lineWidth = lineWidth;
+      this._ctx.strokeStyle = strokeStyle;
+      this._ctx.fillStyle = fillStyle;
+      this._ctx.setLineDash(LineDash);
+
+      this._ctx.beginPath();
+      this._ctx.moveTo(outerX, outerY);
+      this._ctx.lineTo(outerX + outerWidth, outerY);
+      this._ctx.lineTo(outerX + outerWidth, outerY + outerHeight);
+      this._ctx.lineTo(outerX, outerY + outerHeight);
+      this._ctx.lineTo(outerX, outerY);
+
+      this._ctx.moveTo(innerX, innerY);
+      this._ctx.lineTo(innerX + innerWidth, innerY);
+      this._ctx.lineTo(innerX + innerWidth, innerY + innerHeight);
+      this._ctx.lineTo(innerX, innerY + innerHeight);
+      this._ctx.lineTo(innerX, innerY);
+
+      this._ctx.closePath();
+      this._ctx.stroke();
+      this._ctx.fill('evenodd');
+    },
+
+    /*
+     * Надпись размеров картинки над кадрированием
+     * @param {number} fontSize
+     * @param {number} frameThickness
+     */
+    _drawText: function(fontSize, frameThickness) {
+      var OFFSET = fontSize / 2;
+      var startY = -this._resizeConstraint.side / 2 - OFFSET - frameThickness;
+      var message = this._image.naturalWidth + ' x ' + this._image.naturalHeight;
+
+      this._ctx.fillStyle = 'white';
+      this._ctx.lineWidth = 1;
+      this._ctx.strokeStyle = 'rgba(0, 0, 0, 0)';
+      this._ctx.font = fontSize + 'px Tahoma';
+      this._ctx.textAlign = 'center';
+
+      this._ctx.fillText(message, 0, startY);
+    },
+
     /**
      * Отрисовка канваса.
      */
     redraw: function() {
+      var BOLD_LINE = 6;
+      var BACKGROUND_COLOR = 'rgba(0, 0, 0, 0.6)';
+      var STROKE_COLOR = '#41f032';
+      var STROKE_OPACITY_COLOR = 'rgba(0, 0, 0, 0)';
+      var FONT_SIZE = 18;
+
+      var outerX = -this._container.width / 2;
+      var outerY = -this._container.height / 2;
+      var outerWidth = this._container.width;
+      var outerHeight = this._container.height;
+
+      var innerX = -this._resizeConstraint.side / 2 - BOLD_LINE;
+      var innerY = -this._resizeConstraint.side / 2 - BOLD_LINE;
+      var innerWidth = this._resizeConstraint.side + BOLD_LINE / 2;
+      var innerHeight = this._resizeConstraint.side + BOLD_LINE / 2;
+
+      var lineWidth = 1;
+      var LineDash = [0, 0];
+
       // Очистка изображения.
       this._ctx.clearRect(0, 0, this._container.width, this._container.height);
 
@@ -89,9 +166,9 @@
       // чего-либо с другой обводкой.
 
       // Толщина линии.
-      this._ctx.lineWidth = 6;
+      this._ctx.lineWidth = BOLD_LINE;
       // Цвет обводки.
-      this._ctx.strokeStyle = '#ffe753';
+      this._ctx.strokeStyle = STROKE_COLOR;
       // Размер штрихов. Первый элемент массива задает длину штриха, второй
       // расстояние между соседними штрихами.
       this._ctx.setLineDash([15, 10]);
@@ -103,6 +180,7 @@
 
       // Установка начальной точки системы координат в центр холста.
       this._ctx.translate(this._container.width / 2, this._container.height / 2);
+      console.log(this._container.width / 2);
 
       var displX = -(this._resizeConstraint.x + this._resizeConstraint.side / 2);
       var displY = -(this._resizeConstraint.y + this._resizeConstraint.side / 2);
@@ -114,10 +192,16 @@
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
       this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+          (-this._resizeConstraint.side / 2) - BOLD_LINE / 2,
+          (-this._resizeConstraint.side / 2) - BOLD_LINE / 2,
+          this._resizeConstraint.side - BOLD_LINE / 2,
+          this._resizeConstraint.side - BOLD_LINE / 2);
+
+      // Рисуем наш темный фон
+      this._drawRectangle(outerX, outerY, outerWidth, outerHeight, innerX, innerY, innerWidth, innerHeight, lineWidth, STROKE_OPACITY_COLOR, BACKGROUND_COLOR, LineDash);
+
+      //Текст с размерами изображения
+      this._drawText(FONT_SIZE, BOLD_LINE);
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
