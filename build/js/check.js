@@ -25,7 +25,6 @@ function getMessage(a, b) {
     return 'Количество красных точек во всех строчках изображения: ' + sumOfRedPoints;
 
   } else if (typeofa === 'object' && typeofb === 'object') {
-
       artifactsSquare = a.reduce(function(previousSum, currentPoint, i) {
         return currentPoint * b[i] + previousSum;
       }, 0);
