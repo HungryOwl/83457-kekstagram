@@ -78,18 +78,8 @@
 
     /*
      * Черный слой вокруг рамки
-     * @param {number} outerX
-     * @param {number} outerY
-     * @param {number} outerWidth
-     * @param {number} outerHeight
-     * @param {number} innerX
-     * @param {number} innerY
-     * @param {number} innerWidth
-     * @param {number} innerHeight
-     * @param {number} lineWidth
-     * @param {string} strokeStyle
-     * @param {string} fillStyle
-     * @param {Array} LineDash
+     * @param {number} cropSide
+     * @param {number} frameThickness
      */
     _drawRectangle: function(cropSide, frameThickness) {
       var outerX = -this._container.width / 2;
