@@ -142,6 +142,10 @@
 
     // Отрисовка прямоугольника, обозначающего область изображения после
     // кадрирования. Координаты задаются от центра.
+    /*
+     * @param {number} cropSide
+     * @param {number} frameThickness
+     */
     _drawRectangleFrame: function(cropSide, frameThickness) {
       this._ctx.strokeRect(
           (-cropSide / 2) - frameThickness / 2,
