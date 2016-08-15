@@ -147,6 +147,7 @@
     /*
      * @param {number} cropSide
      * @param {number} frameThickness
+     * @param {string} fillColor
      */
     _drawRectangleFrame: function(cropSide, frameThickness, fillColor) {
       this._ctx.fillStyle = fillColor;
@@ -201,6 +202,12 @@
       stepCoordinateY = -bottomCornerY - CIRCLE_RADIUS;
     },
 
+    /*
+     * Рамка зигзагом
+     * @param {number} cropSide
+     * @param {number} frameThickness
+     * @param {string} fillColor
+     */
     _drawZigZagFrame: function(cropSide, frameThickness, fillColor) {
       var i, j;
 
