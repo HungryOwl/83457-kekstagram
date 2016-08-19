@@ -82,13 +82,15 @@
      * @param {number} frameThickness
      */
     _drawRectangle: function(cropSide, frameThickness) {
-      var outerX = -this._container.width / 2;
-      var outerY = -this._container.height / 2;
-      var outerWidth = this._container.width;
-      var outerHeight = this._container.height;
+      var outerLeftX = -this._container.width / 2;
+      var outerTopY = -this._container.height / 2;
+      var outerRightX = this._container.width;
+      var outerBottomY = this._container.height;
 
-      var innerX = -cropSide / 2 - frameThickness;
-      var innerY = -cropSide / 2 - frameThickness;
+      var innerLeftX = -cropSide / 2;
+      var innerTopY = -cropSide / 2;
+      var innerRightX = cropSide / 2;
+      var innerBottomY = cropSide / 2;
 
       this._ctx.lineWidth = 1;
       this._ctx.strokeStyle = 'rgba(0, 0, 0, 0)';
@@ -96,17 +98,17 @@
       this._ctx.setLineDash([0, 0]);
 
       this._ctx.beginPath();
-      this._ctx.moveTo(outerX, outerY);
-      this._ctx.lineTo(outerX + outerWidth, outerY);
-      this._ctx.lineTo(outerX + outerWidth, outerY + outerHeight);
-      this._ctx.lineTo(outerX, outerY + outerHeight);
-      this._ctx.lineTo(outerX, outerY);
+      this._ctx.moveTo(outerLeftX, outerTopY);
+      this._ctx.lineTo(outerLeftX + outerRightX, outerTopY);
+      this._ctx.lineTo(outerLeftX + outerRightX, outerTopY + outerBottomY);
+      this._ctx.lineTo(outerLeftX, outerTopY + outerBottomY);
+      this._ctx.lineTo(outerLeftX, outerTopY);
 
-      this._ctx.moveTo(innerX, innerY);
-      this._ctx.lineTo(cropSide / 2 + frameThickness, innerY);
-      this._ctx.lineTo(cropSide / 2 + frameThickness, cropSide / 2 + frameThickness);
-      this._ctx.lineTo(innerX, cropSide / 2 + frameThickness);
-      this._ctx.lineTo(innerX, innerY);
+      this._ctx.moveTo(innerLeftX - frameThickness, innerTopY - frameThickness);
+      this._ctx.lineTo(innerRightX + frameThickness, innerTopY - frameThickness);
+      this._ctx.lineTo(innerRightX + frameThickness, innerBottomY + frameThickness);
+      this._ctx.lineTo(innerLeftX - frameThickness, innerBottomY + frameThickness);
+      this._ctx.lineTo(innerLeftX - frameThickness, innerTopY);
 
       this._ctx.closePath();
       this._ctx.stroke();
@@ -120,7 +122,7 @@
      */
     _drawText: function(fontSize, frameThickness) {
       var OFFSET = fontSize / 2;
-      var startY = -this._resizeConstraint.side / 2 - OFFSET - frameThickness;
+      var coordinateB = -this._resizeConstraint.side / 2 - OFFSET - frameThickness;
       var message = this._image.naturalWidth + ' x ' + this._image.naturalHeight;
 
       this._ctx.fillStyle = 'white';
@@ -129,15 +131,7 @@
       this._ctx.font = fontSize + 'px Tahoma';
       this._ctx.textAlign = 'center';
 
-      this._ctx.fillText(message, 0, startY);
-    },
-
-    // Отрисовка кружочка для рамочки
-    _drawCircle: function(xCoordinate, yCoordinate, radius, fillColor) {
-      this._ctx.fillStyle = fillColor;
-      this._ctx.beginPath();
-      this._ctx.arc(xCoordinate, yCoordinate, radius, 0, 2 * Math.PI, false);
-      this._ctx.fill();
+      this._ctx.fillText(message, 0, coordinateB);
     },
 
     // Отрисовка прямоугольника, обозначающего область изображения после
@@ -145,8 +139,10 @@
     /*
      * @param {number} cropSide
      * @param {number} frameThickness
+     * @param {string} fillColor
      */
-    _drawRectangleFrame: function(cropSide, frameThickness) {
+    _drawRectangleFrame: function(cropSide, frameThickness, fillColor) {
+      this._ctx.fillStyle = fillColor;
       this._ctx.strokeRect(
           (-cropSide / 2) - frameThickness / 2,
           (-cropSide / 2) - frameThickness / 2,
@@ -154,51 +150,141 @@
           cropSide + frameThickness);
     },
 
+    // Отрисовка кружочка для рамочки
+    _drawCircle: function(xCoordinate, yCoordinate, radius) {
+      this._ctx.beginPath();
+      this._ctx.arc(xCoordinate, yCoordinate, radius, 0, 2 * Math.PI, false);
+      this._ctx.fill();
+    },
+
+    /*
+     * Рисуем линию из кружочков
+     * @param {number} coordinateX
+     * @param {number} coordinateY
+     * @param {number} frameDirection
+     * @param {number} circleRadius
+     * @param {number} circleAmount
+     * @param {number} intervalSize
+     */
+    _drawDottedLine: function(coordinateX, coordinateY, frameDirection, circleRadius, circleAmount, intervalSize) {
+      var i;
+      var circleDiameter = circleRadius * 2;
+
+      //Рисуем линию
+      for (i = 0; i < circleAmount; i++) {
+        if (frameDirection === 0) {
+          this._drawCircle(coordinateX, coordinateY, circleRadius);
+          coordinateX += circleDiameter + intervalSize;
+        } else if (frameDirection === 1) {
+          this._drawCircle(coordinateX, coordinateY, circleRadius);
+          coordinateY += circleDiameter + intervalSize;
+        }
+      }
+    },
+
     /*
      * Рамочка точечками
      * @param {number} cropSide
+     * @param {number} frameThickness
      * @param {string} fillColor
      */
-    _drawCircleFrame: function(cropSide, fillColor) {
-      var i;
-      var CIRCLE_RADIUS = 3;
+    _drawDottedFrame: function(cropSide, frameThickness, fillColor) {
+      var CIRCLE_RADIUS = frameThickness / 2;
+
+      var POINT = [{x: -cropSide / 2 - CIRCLE_RADIUS, y: -cropSide / 2 - CIRCLE_RADIUS, lineDirection: 0},
+                   {x: -cropSide / 2 - CIRCLE_RADIUS, y: cropSide / 2 + CIRCLE_RADIUS, lineDirection: 0},
+                   {x: -cropSide / 2 - CIRCLE_RADIUS, y: -cropSide / 2 - CIRCLE_RADIUS, lineDirection: 1},
+                   {x: cropSide / 2 + CIRCLE_RADIUS, y: -cropSide / 2 - CIRCLE_RADIUS, lineDirection: 1}];
+
       var circleDiameter = CIRCLE_RADIUS * 2;
-      var circleOffsetSize = 4;
-      var circleOffsetAmount;
-      var referencePointX = cropSide / 2;
-      var referencePointY = cropSide / 2;
-      var startDottedBorderX = -referencePointX - CIRCLE_RADIUS;
-      var startDottedBorderY = -referencePointY - CIRCLE_RADIUS;
+      var intervalSize = 4;
+      var circleAmount;
+      var intervalAmount;
 
-      circleOffsetAmount = Math.floor((cropSide + circleDiameter) / (circleDiameter + circleOffsetSize));
-      circleOffsetSize = (cropSide - circleDiameter * (circleOffsetAmount - 1)) / circleOffsetAmount;
+      //Рассчитываем количество пробелов между кружками, округляем до целого
+      intervalAmount = Math.floor((cropSide + circleDiameter) / (circleDiameter + intervalSize));
 
-      //Рисуем верхнюю и нижнюю рамки
-      for(i = 0; i < 2; i++) {
-        while (startDottedBorderX < referencePointX + circleDiameter) {
-          this._drawCircle(startDottedBorderX, startDottedBorderY, CIRCLE_RADIUS, fillColor);
+      //Перерассчитываем размер интервала
+      intervalSize = (cropSide - circleDiameter * (intervalAmount - 1)) / intervalAmount;
 
-          startDottedBorderX += circleDiameter + circleOffsetSize;
+      //Рассчитываем общее количество кружков
+      circleAmount = intervalAmount + 1;
+
+      this._ctx.fillStyle = fillColor;
+
+      POINT.forEach(function(frame) {
+        this._drawDottedLine(frame.x, frame.y, frame.lineDirection,
+                             CIRCLE_RADIUS, circleAmount, intervalSize);
+      }, this);
+    },
+
+    /*
+     * Одна линия зигзагом
+     * @param {number} coordinateA
+     * @param {number} coordinateB
+     * @param {number} step
+     * @param {number} amountOfSteps
+     * @param {number} stepDirection
+     * @param {number} lineDitecrion
+     */
+    _drawZigZagLine: function(coordinateA, coordinateB, step, amountOfSteps, stepDirection, lineDitecrion) {
+      var i;
+
+      for (i = 0; i < amountOfSteps; i++) {
+        coordinateA += step;
+
+        //Переключатель зигзага вверх/вниз
+        i % 2 === stepDirection ? coordinateB += step : coordinateB -= step;
+
+        //Переключатель вертикальности/горизонтальности рамочки
+        if (lineDitecrion === 0) {
+          this._ctx.lineTo(coordinateA, coordinateB);
+        } else if (lineDitecrion === 1) {
+          this._ctx.lineTo(coordinateB, coordinateA);
+        }
+      }
+    },
+
+    /*
+     * Рамка зигзагом
+     * @param {number} cropSide
+     * @param {number} frameThickness
+     * @param {string} fillColor
+     */
+    _drawZigZagFrame: function(cropSide, frameThickness, fillColor) {
+      var POINTS = {};
+
+      //Рассчитываем размер шага
+      var step = frameThickness * 2;
+      //Рассчитываем точное (целое) количество шагов
+      var amountOfSteps = Math.round(cropSide / step);
+
+      //Рассчитываем точное значение шага чтобы рамка равномерно распределилась по стороне
+      step = cropSide / amountOfSteps;
+
+      POINTS = [{a: -cropSide / 2, b: -cropSide / 2 + step, stepDirection: 1, lineDitecrion: 0},
+                {a: -cropSide / 2, b: cropSide / 2 - step, stepDirection: 0, lineDitecrion: 0},
+                {a: -cropSide / 2, b: cropSide / 2 - step, stepDirection: 0, lineDitecrion: 1},
+                {a: -cropSide / 2, b: -cropSide / 2 + step, stepDirection: 1, lineDitecrion: 1}];
+
+      this._ctx.fillStyle = fillColor;
+      this._ctx.setLineDash([0, 0]);
+      this._ctx.beginPath();
+
+      POINTS.forEach(function(frame, i) {
+        if (i < 2) {
+          this._ctx.moveTo(frame.a, frame.b);
+        } else {
+          this._ctx.moveTo(frame.b, frame.a);
         }
 
-        startDottedBorderX = -referencePointX - CIRCLE_RADIUS;
-        startDottedBorderY = referencePointY + CIRCLE_RADIUS;
-      }
+        this._drawZigZagLine(frame.a, frame.b,
+                             step, amountOfSteps,
+                             frame.stepDirection,
+                             frame.lineDitecrion);
+      }, this);
 
-      startDottedBorderX = -referencePointX - CIRCLE_RADIUS;
-      startDottedBorderY = -referencePointY - CIRCLE_RADIUS;
-
-      //Рисуем левую и правую боковые рамки
-      for(i = 0; i < 2; i++) {
-        while (startDottedBorderY < referencePointY + circleDiameter) {
-          this._drawCircle(startDottedBorderX, startDottedBorderY, CIRCLE_RADIUS, fillColor);
-
-          startDottedBorderY += circleDiameter + circleOffsetSize;
-        }
-
-        startDottedBorderX = referencePointX + CIRCLE_RADIUS;
-        startDottedBorderY = -referencePointY - CIRCLE_RADIUS;
-      }
+      this._ctx.stroke();
     },
 
     /*
@@ -218,12 +304,9 @@
     redraw: function() {
       var BOLD_LINE = 6;
       var FONT_SIZE = 18;
-
       var cropSide = this._resizeConstraint.side;
-
       var displX = -(this._resizeConstraint.x + this._resizeConstraint.side / 2);
       var displY = -(this._resizeConstraint.y + this._resizeConstraint.side / 2);
-
       var fillColor = this._getRandomColor();
 
       // Очистка изображения.
@@ -255,11 +338,10 @@
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
 
-      // Отрисовка прямоугольника, обозначающего область изображения после
-      // кадрирования. Координаты задаются от центра.
-      // this._drawRectangleFrame(cropSide, BOLD_LINE);
-
-      this._drawCircleFrame(cropSide, fillColor);
+      // Рамочки
+      //this._drawRectangleFrame(cropSide, BOLD_LINE, fillColor);
+      //this._drawDottedFrame(cropSide, BOLD_LINE, fillColor);
+      this._drawZigZagFrame(cropSide, BOLD_LINE, fillColor);
 
       // Рисуем наш темный фон
       this._drawRectangle(cropSide, BOLD_LINE);
