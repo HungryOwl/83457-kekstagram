@@ -234,7 +234,11 @@
         coordinateA += step;
 
         //Переключатель зигзага вверх/вниз
-        i % 2 === stepDirection ? coordinateB += step : coordinateB -= step;
+        if (i % 2 === stepDirection) {
+          coordinateB += step;
+        } else {
+          coordinateB -= step;
+        }
 
         //Переключатель вертикальности/горизонтальности рамочки
         if (lineDitecrion === 0) {
