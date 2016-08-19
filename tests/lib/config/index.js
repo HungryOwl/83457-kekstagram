@@ -10,6 +10,7 @@ module.exports = {
 
   treshold: 99.99,
 
+  // log_level: 'DEBUG',
   log_level: 'INFO',
 
   phantomjs: {

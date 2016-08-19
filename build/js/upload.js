@@ -164,8 +164,7 @@
 
         fileReader.readAsDataURL(element.files[0]);
       } else {
-        // Показ сообщения об ошибке, если загружаемый файл, не является
-        // поддерживаемым изображением.
+        // Показ сообщения об ошибке, если формат загружаемого файла не поддерживается
         showMessage(Action.ERROR);
       }
     }
@@ -195,7 +194,14 @@
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
-      filterImage.src = currentResizer.exportImage().src;
+      var image = currentResizer.exportImage().src;
+
+      var thumbnails = filterForm.querySelectorAll('.upload-filter-preview');
+      for (var i = 0; i < thumbnails.length; i++) {
+        thumbnails[i].style.backgroundImage = 'url(' + image + ')';
+      }
+
+      filterImage.src = image;
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
@@ -240,7 +246,8 @@
       filterMap = {
         'none': 'filter-none',
         'chrome': 'filter-chrome',
-        'sepia': 'filter-sepia'
+        'sepia': 'filter-sepia',
+        'marvin': 'filter-marvin'
       };
     }
 

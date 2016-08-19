@@ -18,7 +18,7 @@ body {
   position: relative;
 
   min-width: 980px;
-  min-height: 800px;
+  min-height: 900px;
 
   font: 14px "Open Sans", Arial, sans-serif;
   color: #ffe753;
@@ -111,14 +111,23 @@ body {
   max-width: 582px;
 }
 
+
+.upload-filter-label-chrome .upload-filter-preview,
 .filter-chrome {
   -webkit-filter: grayscale(1);
           filter: grayscale(1);
 }
 
+.upload-filter-label-sepia .upload-filter-preview,
 .filter-sepia {
   -webkit-filter: sepia(1);
           filter: sepia(1);
+}
+
+.upload-filter-label-marvin .upload-filter-preview,
+.filter-marvin {
+  -webkit-filter: invert();
+          filter: invert();
 }
 
 .upload-input {
@@ -163,15 +172,14 @@ body {
 
 .upload-form-controls {
   position: absolute;
+  top: 100%;
   right: 0;
-  bottom: 0;
   left: 0;
   z-index: 0;
 
   margin: 0;
   padding: 10px;
 
-  background: rgba(0, 0, 0, 0.8);
   border: 0;
 }
 
@@ -198,6 +206,10 @@ body {
   background: rgba(255, 231, 83, 0.2) url("../img/icon-arrow.png") center no-repeat;
 }
 
+.upload-form-controls-fwd:disabled {
+  opacity: 0.5;
+}
+
 .upload-resize canvas {
   position: absolute;
   top: 50%;
@@ -210,15 +222,16 @@ body {
   cursor: move;
 }
 
-.upload-resize-controls {
+.upload-resize-controls,
+.upload-filter-controls {
   position: absolute;
-  bottom: 10px;
+  top: 100%;
   left: 50%;
   z-index: 1;
+  transform: translateX(-50%);
 
   width: 470px;
-  margin: 0;
-  margin-left: -235px;
+  margin: 10px 0 0;
   padding: 0;
 
   font-size: 12px;
@@ -229,14 +242,16 @@ body {
   border: 0;
 }
 
-.upload-resize-controls input {
-  width: 3em;
+.upload-resize-control {
+  width: 75px;
+  height: 32px;
   margin-top: -3px;
   margin-right: 20px;
-  margin-left: 10px;
+  margin-left: 15px;
   padding: 0 3px;
+  box-sizing: border-box;
 
-  font: 16px/1.3 "Open Sans";
+  font: bold 16px/1.3 "Open Sans";
   vertical-align: middle;
   text-align: center;
   color: #000000;
@@ -245,23 +260,15 @@ body {
   border-radius: 2px;
 }
 
-.upload-filter-controls {
+.upload-resize-label {
   position: absolute;
-  bottom: 10px;
-  left: 50%;
-  z-index: 1;
 
-  width: 470px;
-  margin: 0;
-  margin-left: -235px;
-  padding: 0;
+  width: 75px;
+  margin-top: 32px;
+  margin-left: -95px;
 
   font-size: 12px;
-  line-height: 42px;
   text-align: center;
-  color: #ffffff;
-
-  border: 0;
 }
 
 .upload-filter {
@@ -281,17 +288,37 @@ body {
 
 .upload-filter-label {
   display: inline-block;
-  margin: 0 10px;
+  margin: 0 5px;
 
-  font: bold 14px "Open Sans Condensed";
+  font: 14px "Open Sans Condensed";
+  font-weight: 700;
   color: #ffffff;
   text-transform: uppercase;
 
   cursor: pointer;
 }
 
+.upload-filter-label:hover,
 input[type=radio]:checked + .upload-filter-label {
   color: #ffe753;
+}
+
+input[type=radio]:checked + .upload-filter-label .upload-filter-preview {
+  border-color: #ffe753;
+}
+
+.upload-filter-preview {
+  display: block;
+  width: 70px;
+  height: 70px;
+
+  overflow: hidden;
+  background-size: 100% auto;
+  background-position: center;
+  border: solid 4px transparent;
+  border-radius: 5px;
+
+  margin-bottom: 5px;
 }
 
 .upload-message {

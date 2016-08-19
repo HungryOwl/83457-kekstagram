@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Open+Sans&subset=latin,cyrillic">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700|Open+Sans&subset=latin,cyrillic">
   <link rel="stylesheet" href="css/main.css">
   <title>Кекстаграм</title>
 </head>
@@ -32,9 +32,14 @@
     <input type="text" class="invisible" name="resize-image-src" id="resize-image-src">
 
     <fieldset class="upload-resize-controls">
-      <label for="resize-x">Слева</label><input type="number" id="resize-x" name="x">
-      <label for="resize-y">Сверху</label><input type="number" id="resize-y" name="y">
-      <label for="resize-size">Сторона</label><input type="number" id="resize-size" name="size">
+      <input class="upload-resize-control" type="number" id="resize-x" name="x">
+      <label class="upload-resize-label" for="resize-x">Слева, px</label>
+
+      <input class="upload-resize-control" type="number" id="resize-y" name="y">
+      <label class="upload-resize-label" for="resize-y">Сверху, px</label>
+
+      <input class="upload-resize-control" type="number" id="resize-size" name="size">
+      <label class="upload-resize-label" for="resize-size">Сторона, px</label>
     </fieldset>
 
     <fieldset class="upload-form-controls">
@@ -49,9 +54,29 @@
     <input type="text" class="invisible" name="filter-image-src" id="filter-image-src">
 
     <fieldset class="upload-filter-controls">
-      <input type="radio" name="upload-filter" id="upload-filter-none" value="none" checked><label class="upload-filter-label" for="upload-filter-none">Оригинал</label>
-      <input type="radio" name="upload-filter" id="upload-filter-chrome" value="chrome"><label class="upload-filter-label" for="upload-filter-chrome">Хром</label>
-      <input type="radio" name="upload-filter" id="upload-filter-sepia" value="sepia"><label class="upload-filter-label" for="upload-filter-sepia">Сепия</label>
+      <input type="radio" name="upload-filter" id="upload-filter-none" value="none" checked>
+      <label class="upload-filter-label" for="upload-filter-none">
+        <div class="upload-filter-preview"></div>
+        Оригинал
+      </label>
+
+      <input type="radio" name="upload-filter" id="upload-filter-chrome" value="chrome">
+      <label class="upload-filter-label upload-filter-label-chrome" for="upload-filter-chrome">
+        <div class="upload-filter-preview"></div>
+        Хром
+      </label>
+
+      <input type="radio" name="upload-filter" id="upload-filter-sepia" value="sepia">
+      <label class="upload-filter-label upload-filter-label-sepia" for="upload-filter-sepia">
+        <div class="upload-filter-preview"></div>
+        Сепия
+      </label>
+
+      <input type="radio" name="upload-filter" id="upload-filter-marvin" value="marvin">
+      <label class="upload-filter-label upload-filter-label-marvin" for="upload-filter-marvin">
+        <div class="upload-filter-preview"></div>
+        Марвин
+      </label>
     </fieldset>
 
     <fieldset class="upload-form-controls">
@@ -104,7 +129,10 @@
   </a>
 </template>
 
-<script type="text/javascript" src="js/resizer.js"></script>
-<script type="text/javascript" src="js/upload.js"></script>
+
+<script src="js/resizer.js" charset="utf-8"></script>
+<script src="js/upload.js" charset="utf-8"></script>
+
+
 </body>
 </html>
