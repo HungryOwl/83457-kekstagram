@@ -42,6 +42,82 @@
   var currentResizer;
 
   /**
+   * Форма загрузки изображения.
+   * @type {HTMLFormElement}
+   */
+  var uploadForm = document.forms['upload-select-image'];
+
+  /**
+   * Форма кадрирования изображения.
+   * @type {HTMLFormElement}
+   */
+  var resizeForm = document.forms['upload-resize'];
+
+  /**
+   * Ищем элементы формы в форме с пом-ю свойства elements по атрибуту name элемента формы
+   * @const
+   * @type {HTMLInputElement}
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement
+   */
+  var resizeLeftSide = resizeForm['x'];
+
+  var resizeTopSide = resizeForm['y'];
+
+  var resizeSize = resizeForm['size'];
+
+  var resizeSubmit = resizeForm['fwd'];
+
+  /**
+   * Форма добавления фильтра.
+   * @type {HTMLFormElement}
+   */
+  var filterForm = document.forms['upload-filter'];
+
+  /**
+   * @type {HTMLImageElement}
+   */
+  var filterImage = filterForm.querySelector('.filter-image-preview');
+
+  /**
+   * @type {HTMLElement}
+   */
+  var uploadMessage = document.querySelector('.upload-message');
+
+  function isInputWidthCorrect(coordinateX, cropSide) {
+    return coordinateX + cropSide <= currentResizer._image.naturalWidth;
+  }
+
+  function isInputHeightCorrect(coordinateY, cropSide) {
+    return coordinateY + cropSide <= currentResizer._image.naturalHeight;
+  }
+
+  function isInputCoordinatesCorrect(coordinateX, coordinateY) {
+    return coordinateX >= 0 && coordinateY >= 0;
+  }
+
+  /**
+   * Проверяет, валидны ли данные, в форме кадрирования.
+   * @return {boolean}
+   */
+  function resizeFormIsValid() {
+    var offsetX = parseInt(resizeLeftSide.value.trim(), 10);
+    var offsetY = parseInt(resizeTopSide.value.trim(), 10);
+    var side = parseInt(resizeSize.value.trim(), 10);
+
+    var isFormCorrect, isWidthCorrect, isHeightCorrect, isCoordinatesCorrect;
+
+    isWidthCorrect = isInputWidthCorrect(offsetX, side);
+    isHeightCorrect = isInputHeightCorrect(offsetY, side);
+    isCoordinatesCorrect = isInputCoordinatesCorrect(offsetX, offsetY);
+
+    isFormCorrect = isWidthCorrect && isHeightCorrect && isCoordinatesCorrect;
+
+    resizeSubmit.disabled = !isFormCorrect;
+
+    return isFormCorrect;
+  }
+
+    /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
    * изображением.
    */
@@ -67,41 +143,6 @@
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
 
-  /**
-   * Проверяет, валидны ли данные, в форме кадрирования.
-   * @return {boolean}
-   */
-  function resizeFormIsValid() {
-    return true;
-  }
-
-  /**
-   * Форма загрузки изображения.
-   * @type {HTMLFormElement}
-   */
-  var uploadForm = document.forms['upload-select-image'];
-
-  /**
-   * Форма кадрирования изображения.
-   * @type {HTMLFormElement}
-   */
-  var resizeForm = document.forms['upload-resize'];
-
-  /**
-   * Форма добавления фильтра.
-   * @type {HTMLFormElement}
-   */
-  var filterForm = document.forms['upload-filter'];
-
-  /**
-   * @type {HTMLImageElement}
-   */
-  var filterImage = filterForm.querySelector('.filter-image-preview');
-
-  /**
-   * @type {HTMLElement}
-   */
-  var uploadMessage = document.querySelector('.upload-message');
 
   /**
    * @param {Action} action
@@ -260,6 +301,19 @@
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
+
+  resizeLeftSide.min = 0;
+  resizeTopSide.min = 0;
+  resizeSize.min = 0;
+  resizeLeftSide.value = 0;
+  resizeTopSide.value = 0;
+  resizeSize.value = 0;
+
+  resizeLeftSide.oninput = resizeFormIsValid;
+
+  resizeTopSide.oninput = resizeFormIsValid;
+
+  resizeSize.oninput = resizeFormIsValid;
 
   cleanupResizer();
   updateBackground();
