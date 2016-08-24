@@ -263,6 +263,11 @@
       //Рассчитываем точное (целое) количество шагов
       var amountOfSteps = Math.round(cropSide / step);
 
+      //Количество шагов должно быть четным
+      if (amountOfSteps % 2 === 1) {
+        amountOfSteps++;
+      }
+
       //Рассчитываем точное значение шага чтобы рамка равномерно распределилась по стороне
       step = cropSide / amountOfSteps;
 
