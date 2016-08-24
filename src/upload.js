@@ -8,6 +8,9 @@
 'use strict';
 
 (function() {
+  //Подключили библиотеку куки
+  var browserCookies = require('browser-cookies');
+
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -54,6 +57,12 @@
   var resizeForm = document.forms['upload-resize'];
 
   /**
+   * Форма фильтрации изображения.
+   * @type {HTMLFormElement}
+   */
+  var filterForm = document.forms['upload-filter'];
+
+  /**
    * Ищем элементы формы в форме с пом-ю свойства elements по атрибуту name элемента формы
    * @const
    * @type {HTMLInputElement}
@@ -68,12 +77,6 @@
   var resizeSubmit = resizeForm['fwd'];
 
   /**
-   * Форма добавления фильтра.
-   * @type {HTMLFormElement}
-   */
-  var filterForm = document.forms['upload-filter'];
-
-  /**
    * @type {HTMLImageElement}
    */
   var filterImage = filterForm.querySelector('.filter-image-preview');
@@ -82,6 +85,58 @@
    * @type {HTMLElement}
    */
   var uploadMessage = document.querySelector('.upload-message');
+
+  /**
+   * Кладем в константу коллекцию радиобаттонов формы
+   * @const
+   * @type {RadioNodeList}
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/RadioNodeList
+   */
+  var filterCollection = filterForm.elements['upload-filter'];
+
+  /**
+   * Куки, в котором храним тип фильтра
+   * @const
+   * type {string}
+   */
+  var COOKIE_FILTER_NAME = 'upload-filter';
+
+  /**
+   * Вычисляем количество дней, прошедших со дня моего рождения до текущей даты
+   * @return {number}
+   */
+  function getDateToExpire() {
+    /**
+     * Сегодняшняя дата
+     * @type {Date}
+     */
+    var today = new Date();
+
+    /**
+     * Вычисляем текущий год
+     * @type {number}
+     */
+    var currentYear = today.getFullYear();
+
+    /**
+     * Устанавливаем текущий год дня рождения Грейс Хоппер
+     * @type {Date}
+     */
+    var birthday = new Date(currentYear, 11, 9);
+
+    /**
+     * Число милисекунд в дне
+     * @const
+     * @type {number}
+     */
+    var MS_IN_DAY = 1000 * 60 * 60 * 24;
+
+    if (today < birthday) {
+      birthday.setFullYear(currentYear - 1);
+    }
+
+    return Math.floor((today - birthday) / MS_IN_DAY);
+  }
 
   function isInputWidthCorrect(coordinateX, cropSide) {
     return coordinateX + cropSide <= currentResizer._image.naturalWidth;
@@ -117,6 +172,28 @@
     return isFormCorrect;
   }
 
+  /**
+   * Записываем Куку
+   */
+  function setCookie() {
+    var cookieOptExpires = {expires: getDateToExpire()};
+
+    Array.prototype.forEach.call(filterCollection, function(filter) {
+      if (filter.checked) {
+        browserCookies.set(COOKIE_FILTER_NAME, filter.value, cookieOptExpires);
+      }
+    });
+  }
+
+  /**
+   * Читаем фильтр из Куки
+   */
+  function setFilterFromCookie() {
+    Array.prototype.forEach.call(filterCollection, function(filter) {
+      filter.checked = Boolean(filter.value === browserCookies.get(COOKIE_FILTER_NAME)) || filter.checked;
+    });
+  }
+
     /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
    * изображением.
@@ -142,7 +219,6 @@
     var randomImageNumber = Math.round(Math.random() * (images.length - 1));
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
-
 
   /**
    * @param {Action} action
@@ -317,4 +393,7 @@
 
   cleanupResizer();
   updateBackground();
+  setFilterFromCookie();
+
+  filterForm.addEventListener('submit', setCookie);
 })();
