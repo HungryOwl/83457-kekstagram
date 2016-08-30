@@ -2,6 +2,7 @@
 
 (function() {
   var amountOfRequests = 0;
+  var PICTURES_LOAD = 'http://localhost:1506/api/pictures';
 
   /**
    * Получаем данные с сервера по JSONP
@@ -22,7 +23,7 @@
     };
   }
 
-  requestJsonp('http://localhost:1506/api/pictures', function(pictures) {
+  requestJsonp(PICTURES_LOAD, function(pictures) {
     console.log(pictures);
   });
 })();
