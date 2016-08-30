@@ -6,7 +6,7 @@
 
   /**
    * Получаем данные с сервера по JSONP
-   * @param  {String}   url      Адрес, по которому получаем данные
+   * @param  {string}   url      Адрес, по которому получаем данные
    * @param  {Function} callback Обрабатываем данные после загрузки
    */
   function requestJsonp(url, callback) {
