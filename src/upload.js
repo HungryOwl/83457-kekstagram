@@ -1,5 +1,3 @@
-/* global Resizer: true */
-
 /**
  * @fileoverview
  * @author Igor Alexeenko (o0)
@@ -7,9 +5,8 @@
 
 'use strict';
 
-(function() {
-  //Подключили библиотеку куки
-  var browserCookies = require('browser-cookies');
+//Подключили библиотеку куки
+define(['browser-cookies', './resizer'], function(browserCookies, Resizer) {
 
   /** @enum {string} */
   var FileType = {
@@ -194,7 +191,7 @@
     });
   }
 
-    /**
+  /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
    * изображением.
    */
@@ -396,4 +393,4 @@
   setFilterFromCookie();
 
   filterForm.addEventListener('submit', setCookie);
-})();
+});
