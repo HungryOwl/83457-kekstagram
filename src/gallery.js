@@ -28,6 +28,9 @@ define('galleryConstructor', ['./utils'], function(utils) {
     this.pictures = pictures;
   };
 
+  /**
+   * Показываем следующее фото
+   */
   Gallery.prototype.next = function() {
     if(++this.activePicture > this.pictures.length - 1) {
       this.activePicture = 0;
@@ -36,6 +39,9 @@ define('galleryConstructor', ['./utils'], function(utils) {
     this.setActivePicture(this.activePicture);
   };
 
+  /**
+   * Показываем предыдущее фото
+   */
   Gallery.prototype.prev = function() {
     if(--this.activePicture < 0) {
       this.activePicture = this.pictures.length - 1;
@@ -44,6 +50,9 @@ define('galleryConstructor', ['./utils'], function(utils) {
     this.setActivePicture(this.activePicture);
   };
 
+  /**
+   * Скрываем галерею, убираем листенеры
+   */
   Gallery.prototype.hide = function() {
     this.overlay.classList.add('invisible');
     this.closeButton.removeEventListener('click', this.hide);
@@ -53,22 +62,32 @@ define('galleryConstructor', ['./utils'], function(utils) {
     window.removeEventListener('keydown', this.keyEscCheck);
   };
 
+  /**
+   * Проверяем нажатие клавиш вправо/влево/esc
+   */
   Gallery.prototype.keyRightCheck = utils.listenKey(39, Gallery.prototype.next);
   Gallery.prototype.keyLeftCheck = utils.listenKey(37, Gallery.prototype.prev);
   Gallery.prototype.keyEscCheck = utils.listenKey(27, Gallery.prototype.hide);
 
+  /**
+   * Показываем галерею, вешаем листенеры
+   * @param  {number} pageNumber Номер фото, с которого начинается показ
+   */
   Gallery.prototype.show = function(pageNumber) {
     this.overlay.classList.remove('invisible');
     this.closeButton.addEventListener('click', this.hide);
-    this.setActivePicture(pageNumber);
-
     this.imgContainer.addEventListener('click', this.next);
+    this.setActivePicture(pageNumber);
 
     window.addEventListener('keydown', this.keyRightCheck);
     window.addEventListener('keydown', this.keyLeftCheck);
     window.addEventListener('keydown', this.keyEscCheck);
   };
 
+  /**
+   * Показываем актуальную картинку в галерее
+   * @param {number} pageNumber Номер фото, с которого начинается показ
+   */
   Gallery.prototype.setActivePicture = function(pageNumber) {
     this.imgContainer.src = this.pictures[pageNumber].url;
     this.likes.textContent = this.pictures[pageNumber].likes;
