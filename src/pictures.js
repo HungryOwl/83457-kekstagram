@@ -1,23 +1,23 @@
 'use strict';
 
-define('pictures', ['./load', './utils', './template'], function(load, utils, getPictureElement) {
+define('pictures', ['./load', './utils', './picture', './gallery'], function(load, utils, getPictureElement, Gallery) {
 
   var PICTURES_LOAD = 'http://localhost:1506/api/pictures';
 
-  var pictures = [];
+  var pictureData = [];
 
   var pictureContainer = document.querySelector('.pictures');
 
   var filterForm = document.querySelector('.filters');
 
   /**
-   * Отрисовываем картинки
+   * Отрисовываем картинки, пробегаясь по массиву с данными
    */
   function renderImages() {
     var pictureCollection = document.createDocumentFragment();
 
-    pictures.forEach(function(data) {
-      pictureCollection.appendChild(getPictureElement(data));
+    pictureData.forEach(function(data, elementNumber) {
+      pictureCollection.appendChild(getPictureElement(data, elementNumber));
     });
 
     pictureContainer.appendChild(pictureCollection);
@@ -29,9 +29,11 @@ define('pictures', ['./load', './utils', './template'], function(load, utils, ge
   filterForm.classList.add('hidden');
 
   load.requestJsonp(PICTURES_LOAD, function(picturesData) {
-    pictures = picturesData;
+    pictureData = picturesData;
 
     renderImages();
+    Gallery.setPictures(pictureData);
+
     filterForm.classList.remove('hidden');
   });
 });
