@@ -1,6 +1,6 @@
 'use strict';
 
-define('getPictureElement', ['./load', './utils'], function(load, utils) {
+define('getPictureElement', ['./load', './utils', './gallery'], function(load, utils, Gallery) {
 
   var htmlElementToClone = utils.getTemplateClone('#picture-template', '.picture');
 
@@ -34,13 +34,18 @@ define('getPictureElement', ['./load', './utils'], function(load, utils) {
    * @param  {Object} data Данные, которыми заполняем шаблон
    * @return {HTMLElement} DOM-элемент, заполненный данными
    */
-  function getPictureElement(data) {
+  function getPictureElement(data, pageNumber) {
     var element = htmlElementToClone.cloneNode(true);
 
     element.querySelector('.picture-comments').textContent = data.comments;
     element.querySelector('.picture-likes').textContent = data.likes;
 
     getPictureImg(data, element);
+
+    element.addEventListener('click', function(evt) {
+      evt.preventDefault();
+      Gallery.show(pageNumber);
+    });
 
     return element;
   }

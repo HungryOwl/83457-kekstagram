@@ -20,7 +20,22 @@ define('utils', function() {
     return elementToClone;
   }
 
+  /**
+   * Проверяем, какая клавиша нажата
+   * @param  {number}   keyCode   код клавиши
+   * @param  {SwitchPicture} callback  вызывем коллбэк по нажатию
+   * @return {function}           проверяем, та ли нажата клавиша
+   */
+  function listenKey(keyCode, callback) {
+    return function(evt) {
+      if (evt.keyCode === keyCode) {
+        callback.call(this);
+      }
+    };
+  }
+
   return {
-    getTemplateClone: getTemplateClone
+    getTemplateClone: getTemplateClone,
+    listenKey: listenKey
   };
 });
