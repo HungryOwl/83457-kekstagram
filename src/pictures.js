@@ -1,13 +1,31 @@
 'use strict';
 
-define('pictures', ['./load', './utils', './picture', './gallery'], function(load, utils, getPictureElement, Gallery) {
+define('pictures', ['./load', './utils', './gallery', './picture'], function(load, utils, Gallery, Picture) {
 
   var PICTURES_LOAD = 'http://localhost:1506/api/pictures';
 
+  /**
+   * Массив отзывов, полученных по JSONP
+   * @type {Array.<Object>}
+   */
   var pictureData = [];
 
+  /**
+   * Массив отрисованных объектов-картинок из конструктора
+   * @type {Array}
+   */
+  var renderedPictures = [];
+
+  /**
+   * Контейнер для вставки всех картинок
+   * @type {HTMLElement}
+   */
   var pictureContainer = document.querySelector('.pictures');
 
+  /**
+   * Форма с фильтрами
+   * @type {HTMLFormElement}
+   */
   var filterForm = document.querySelector('.filters');
 
   /**
@@ -16,8 +34,11 @@ define('pictures', ['./load', './utils', './picture', './gallery'], function(loa
   function renderImages() {
     var pictureCollection = document.createDocumentFragment();
 
-    pictureData.forEach(function(data, elementNumber) {
-      pictureCollection.appendChild(getPictureElement(data, elementNumber));
+    pictureData.forEach(function(data, pictureNumber) {
+      var picture = new Picture(data, pictureNumber);
+      renderedPictures.push(picture);
+
+      pictureCollection.appendChild(picture.element);
     });
 
     pictureContainer.appendChild(pictureCollection);

@@ -2,6 +2,9 @@
 
 define('galleryConstructor', ['./utils'], function(utils) {
 
+  /**
+   * Конструктор галереи
+   */
   function Gallery() {
     this.pictures = [];
     this.activePicture = 0;
@@ -11,6 +14,13 @@ define('galleryConstructor', ['./utils'], function(utils) {
     this.likes = this.overlay.querySelector('.likes-count');
     this.comments = this.overlay.querySelector('.comments-count');
 
+    this.bindListeners();
+  }
+
+  /**
+   * Сохраняем контекст
+   */
+  Gallery.prototype.bindListeners = function() {
     this.hide = this.hide.bind(this);
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
@@ -18,7 +28,7 @@ define('galleryConstructor', ['./utils'], function(utils) {
     this.keyRightCheck = this.keyRightCheck.bind(this);
     this.keyLeftCheck = this.keyLeftCheck.bind(this);
     this.keyEscCheck = this.keyEscCheck.bind(this);
-  }
+  };
 
   /**
    * Записываем в свойство pictures исходный массив с объектами данных по фотографиям
@@ -71,7 +81,7 @@ define('galleryConstructor', ['./utils'], function(utils) {
 
   /**
    * Показываем галерею, вешаем листенеры
-   * @param  {number} pageNumber Номер фото, с которого начинается показ
+   * @param {number} pageNumber Номер фото, с которого начинается показ
    */
   Gallery.prototype.show = function(pageNumber) {
     this.overlay.classList.remove('invisible');
