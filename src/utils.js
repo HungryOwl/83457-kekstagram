@@ -23,7 +23,7 @@ define('utils', function() {
   /**
    * Проверяем, какая клавиша нажата
    * @param  {number}   keyCode   код клавиши
-   * @param  {SwitchPicture} callback  вызывем коллбэк по нажатию
+   * @param  {Function} callback  вызывем коллбэк по нажатию
    * @return {function}           проверяем, та ли нажата клавиша
    */
   function listenKey(keyCode, callback) {

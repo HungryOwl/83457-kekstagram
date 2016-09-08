@@ -1,54 +1,33 @@
 'use strict';
 
-define('getPictureElement', ['./load', './utils', './gallery'], function(load, utils, Gallery) {
-
-  var htmlElementToClone = utils.getTemplateClone('#picture-template', '.picture');
+define('pictureConstructor', ['./template', './gallery'], function(getPictureElement, Gallery) {
 
   /**
-   * Грузим картинку в склонированный шаблон
-   * @param  {Object} data
-   * @param  {HTMLElement} element DOM-элемент, заполненный данными
-   * @return {HTMLElement} element DOM-элемент, заполненный данными и атрибутом src у тега img
+   * Конструктор отдельной картинки
+   * @param {object} data Данные, полученные по JSONP
+   * @param {number} pictureNumber Номер фото, с которого начнется показ галереи
+   *                               - номер элемента в массиве данных, полученном через JSONP
+   * @constructor
    */
-  function getPictureImg(data, element) {
-    var elementImg = element.querySelector('img');
-    var PICTURE_SIZE = 182;
+  function Picture(data, pictureNumber) {
+    this.data = data;
+    this.element = getPictureElement(this.data);
 
-    function onImageLoad(error) {
-      if(error) {
-        element.classList.add('picture-load-failure');
-      } else {
-        elementImg.height = PICTURE_SIZE;
-        elementImg.width = PICTURE_SIZE;
-        elementImg.src = data.url;
-      }
-    }
-
-    load.loadImg(data.url, onImageLoad);
-
-    return element;
-  }
-
-  /**
-   * Генерируем DOM-элемент с данными
-   * @param  {Object} data Данные, которыми заполняем шаблон
-   * @return {HTMLElement} DOM-элемент, заполненный данными
-   */
-  function getPictureElement(data, pageNumber) {
-    var element = htmlElementToClone.cloneNode(true);
-
-    element.querySelector('.picture-comments').textContent = data.comments;
-    element.querySelector('.picture-likes').textContent = data.likes;
-
-    getPictureImg(data, element);
-
-    element.addEventListener('click', function(evt) {
+    this.showGallery = function(evt) {
       evt.preventDefault();
-      Gallery.show(pageNumber);
-    });
+      Gallery.show(pictureNumber);
+    };
 
-    return element;
+    this.element.addEventListener('click', this.showGallery);
   }
 
-  return getPictureElement;
+  Picture.prototype.showGallery = function(pictureNumber) {
+    Gallery.show(pictureNumber);
+  };
+
+  Picture.prototype.remove = function() {
+    this.element.removeEventListener('click', this.showGallery);
+  };
+
+  return Picture;
 });
