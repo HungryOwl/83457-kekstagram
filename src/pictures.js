@@ -2,7 +2,7 @@
 
 define('pictures', ['./load', './utils', './gallery', './picture'], function(load, utils, Gallery, Picture) {
 
-  var PICTURES_LOAD = 'http://localhost:1506/api/pictures';
+  var PICTURES_LOAD = '4http://localhost:1506/api/pictures';
 
   /**
    * Массив отзывов, полученных по JSONP
@@ -49,13 +49,32 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
    */
   filterForm.classList.add('hidden');
 
-  load.requestJsonp(PICTURES_LOAD, function(picturesData) {
+  /**
+   * Загружаем данные по JSONP
+   */
+  /*load.requestJsonp(PICTURES_LOAD, function(picturesData) {
     pictureData = picturesData;
 
     renderImages();
     Gallery.setPictures(pictureData);
 
     filterForm.classList.remove('hidden');
+  });*/
+
+  /**
+   * Загружаем данные по xhr
+   */
+  load.callServer(PICTURES_LOAD, function(error, pictures) {
+    if(error) {
+      console.log('Данные по xhr не загрузились');
+    } else {
+      pictureData = pictures;
+
+      renderImages();
+      Gallery.setPictures(pictureData);
+
+      filterForm.classList.remove('hidden');
+    }
   });
 });
 

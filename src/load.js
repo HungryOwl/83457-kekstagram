@@ -28,6 +28,27 @@ define('load', function() {
     };
   }
 
+  function callServer(url, callback) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener('load', function(evt) {
+      callback(false, JSON.parse(evt.target.response));
+    });
+
+    xhr.addEventListener('error', function() {
+      callback(true);
+    });
+
+    xhr.addEventListener('timeout', function() {
+      callback(true);
+    });
+
+    xhr.open('GET', url);
+
+    xhr.timeout = 10000;
+    xhr.send();
+  }
+
   /**
    * Коллбэк, отрабатывающий при загрузке/ошибке загрузки/таймауте загрузки картинки
    * @callback LoadImageCallback
@@ -63,6 +84,7 @@ define('load', function() {
 
   return {
     requestJsonp: requestJsonp,
+    callServer: callServer,
     loadImg: loadImg
   };
 });
