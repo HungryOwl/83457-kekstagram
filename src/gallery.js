@@ -42,7 +42,6 @@ define('galleryConstructor', ['./utils'], function(utils) {
         this.pictures.push(picture);
       }, this);
     }
-    console.log('this.pictures ', this.pictures);
   };
 
   /**

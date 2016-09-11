@@ -64,8 +64,6 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
    * Отрисовываем картинки, пробегаясь по массиву с данными
    */
   function renderImages() {
-    console.log('XhrParams до изменения номера страницы', XhrParams);
-
     var pictureCollection = document.createDocumentFragment();
     var pictureNumber = XhrParams.from;
 
@@ -81,10 +79,6 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
     pageNumber++;
     XhrParams.from = pageNumber * PAGE_SIZE;
     XhrParams.to = pageNumber * PAGE_SIZE + PAGE_SIZE;
-
-    console.log('XhrParams после изменения номера страницы', XhrParams);
-    console.log('отрисовали ' + pageNumber + ' раз');
-    console.log('pageNumber ', pageNumber);
   }
 
   /*
