@@ -6,7 +6,7 @@ define('galleryConstructor', ['./utils'], function(utils) {
    * Конструктор галереи
    */
   function Gallery() {
-    this.pictures = [];
+    this.pictures = null;
     this.activePicture = 0;
     this.overlay = document.querySelector('.gallery-overlay');
     this.closeButton = this.overlay.querySelector('.gallery-overlay-close');
@@ -32,10 +32,17 @@ define('galleryConstructor', ['./utils'], function(utils) {
 
   /**
    * Записываем в свойство pictures исходный массив с объектами данных по фотографиям
-   * @param {Array<Object>} pictures массив с объектами данных по фотографиям
+   * @param {Array<Object>} pictureData массив с объектами данных по фотографиям
    */
-  Gallery.prototype.setPictures = function(pictures) {
-    this.pictures = pictures;
+  Gallery.prototype.setPictures = function(pictureData) {
+    if(!this.pictures) {
+      this.pictures = pictureData;
+    } else {
+      pictureData.forEach(function(picture) {
+        this.pictures.push(picture);
+      }, this);
+    }
+    console.log('this.pictures ', this.pictures);
   };
 
   /**

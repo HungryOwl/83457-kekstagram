@@ -28,7 +28,13 @@ define('load', function() {
     };
   }
 
-  function callServer(url, callback) {
+  /**
+   * Запрос данных с сервера по xhr
+   * @param  {String}           url       Ссылка, по которой обращаемся к серверу за данными
+   * @param  {Object}           param     Объект с параметрами загрузки - описать с помощью @typedef потом
+   * @param  {LoadXhrCallback}  callback  Коллбэк, отрабатывающий возможные события загрузки данных
+   */
+  function callServer(url, params, callback) {
     var xhr = new XMLHttpRequest();
 
     xhr.addEventListener('load', function(evt) {
@@ -43,7 +49,10 @@ define('load', function() {
       callback(true);
     });
 
-    xhr.open('GET', url);
+    xhr.open('GET', url +
+      '?from=' + (params.from || 0) +
+      '&to=' + (params.to || Infinity) +
+      '&filter=' + (params.filter || 'default'));
 
     xhr.timeout = 10000;
     xhr.send();

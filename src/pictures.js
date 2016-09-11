@@ -2,19 +2,13 @@
 
 define('pictures', ['./load', './utils', './gallery', './picture'], function(load, utils, Gallery, Picture) {
 
-  var PICTURES_LOAD = '4http://localhost:1506/api/pictures';
+  var PICTURES_LOAD = 'http://localhost:1506/api/pictures';
 
   /**
    * Массив отзывов, полученных по JSONP
    * @type {Array.<Object>}
    */
   var pictureData = [];
-
-  /**
-   * Массив отрисованных объектов-картинок из конструктора
-   * @type {Array}
-   */
-  var renderedPictures = [];
 
   /**
    * Контейнер для вставки всех картинок
@@ -29,19 +23,68 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
   var filterForm = document.querySelector('.filters');
 
   /**
+   * Количество отрисованных фото
+   * @const {Number}
+   */
+  var PAGE_SIZE = 12;
+
+  /**
+   * Номер страницы, с которой начинаем показ фото
+   * @type {number}
+   */
+  var pageNumber = 0;
+
+  /**
+   * Список for у меток, по которым фильтруем
+   * @type {Object}
+   */
+  var Filter = {
+    POPULAR: 'filter-popular',
+    NEWEST: 'filter-new',
+    DISCUSSED: 'filter-discussed'
+  };
+
+  /**
+   * Дефолтный фильтр
+   * @const {string}
+   */
+  var DEFAULT_FILTER = Filter.POPULAR;
+
+  /**
+   * Параметры для запроса по xhr - описать по @typedef
+   * @type {Object}
+   */
+  var XhrParams = {
+    from: pageNumber * PAGE_SIZE,
+    to: pageNumber * PAGE_SIZE + PAGE_SIZE,
+    filter: DEFAULT_FILTER
+  };
+
+  /**
    * Отрисовываем картинки, пробегаясь по массиву с данными
    */
   function renderImages() {
+    console.log('XhrParams до изменения номера страницы', XhrParams);
+
     var pictureCollection = document.createDocumentFragment();
+    var pictureNumber = XhrParams.from;
 
-    pictureData.forEach(function(data, pictureNumber) {
+    pictureData.forEach(function(data) {
       var picture = new Picture(data, pictureNumber);
-      renderedPictures.push(picture);
 
+      pictureNumber++;
       pictureCollection.appendChild(picture.element);
     });
 
     pictureContainer.appendChild(pictureCollection);
+
+    pageNumber++;
+    XhrParams.from = pageNumber * PAGE_SIZE;
+    XhrParams.to = pageNumber * PAGE_SIZE + PAGE_SIZE;
+
+    console.log('XhrParams после изменения номера страницы', XhrParams);
+    console.log('отрисовали ' + pageNumber + ' раз');
+    console.log('pageNumber ', pageNumber);
   }
 
   /*
@@ -50,21 +93,25 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
   filterForm.classList.add('hidden');
 
   /**
-   * Загружаем данные по JSONP
+   * Грузим следующую страницу
+   * @param  {boolean}         error     Обработка ошибки загрузки xhr
+   * @param  {Array.<Object>}  pictures  Массив объектов, поллученных по xhr
    */
-  /*load.requestJsonp(PICTURES_LOAD, function(picturesData) {
-    pictureData = picturesData;
+  function loadNextPhotosPage(error, pictures) {
+    if(error) {
+      console.log('Данные по xhr не загрузились');
+    } else {
+      pictureData = pictures;
 
-    renderImages();
-    Gallery.setPictures(pictureData);
-
-    filterForm.classList.remove('hidden');
-  });*/
+      renderImages();
+      Gallery.setPictures(pictureData);
+    }
+  }
 
   /**
    * Загружаем данные по xhr
    */
-  load.callServer(PICTURES_LOAD, function(error, pictures) {
+  load.callServer(PICTURES_LOAD, XhrParams, function(error, pictures) {
     if(error) {
       console.log('Данные по xhr не загрузились');
     } else {
@@ -75,6 +122,10 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
 
       filterForm.classList.remove('hidden');
     }
+  });
+
+  window.addEventListener('scroll', function() {
+    load.callServer(PICTURES_LOAD, XhrParams, loadNextPhotosPage);
   });
 });
 
