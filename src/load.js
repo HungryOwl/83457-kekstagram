@@ -31,7 +31,7 @@ define('load', function() {
   /**
    * Запрос данных с сервера по xhr
    * @param  {String}           url       Ссылка, по которой обращаемся к серверу за данными
-   * @param  {Object}           param     Объект с параметрами загрузки - описать с помощью @typedef потом
+   * @param  {Object}           params    Объект с параметрами загрузки
    * @param  {LoadXhrCallback}  callback  Коллбэк, отрабатывающий возможные события загрузки данных
    */
   function callServer(url, params, callback) {

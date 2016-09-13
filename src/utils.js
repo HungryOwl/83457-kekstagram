@@ -34,8 +34,31 @@ define('utils', function() {
     };
   }
 
+  /**
+   * Троттлим что-то
+   * @param  {callback} callback    функция, которая будет троттлиться
+   * @param  {number}   time        время троттлинга
+   */
+  function throttle(callback, time) {
+    /**
+     * controlDate контрольная дата, с которой начинается троттлинг
+     * @type {Date}
+     */
+    var controlDate = new Date();
+
+    return function() {
+      var currentDate = new Date();
+
+      if (currentDate.valueOf() - controlDate.valueOf() >= time) {
+        callback();
+        controlDate = new Date();
+      }
+    };
+  }
+
   return {
     getTemplateClone: getTemplateClone,
-    listenKey: listenKey
+    listenKey: listenKey,
+    throttle: throttle
   };
 });
