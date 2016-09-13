@@ -4,10 +4,9 @@ define('pictureConstructor', ['./template', './gallery'], function(getPictureEle
 
   /**
    * Конструктор отдельной картинки
-   * @param {object} data Данные, полученные по JSONP
+   * @param {object} data Данные, полученные по XMLHttpRequest
    * @param {number} pictureNumber Номер фото, с которого начнется показ галереи
-   *                               - номер элемента в массиве данных, полученном через JSONP
-   * @constructor
+   *                               - номер элемента в массиве данных, полученном через XMLHttpRequest
    */
   function Picture(data, pictureNumber) {
     this.data = data;

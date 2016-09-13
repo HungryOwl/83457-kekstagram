@@ -29,6 +29,36 @@ define('load', function() {
   }
 
   /**
+   * Запрос данных с сервера по xhr
+   * @param  {String}           url       Ссылка, по которой обращаемся к серверу за данными
+   * @param  {Object}           params    Объект с параметрами загрузки
+   * @param  {LoadXhrCallback}  callback  Коллбэк, отрабатывающий возможные события загрузки данных
+   */
+  function callServer(url, params, callback) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.addEventListener('load', function(evt) {
+      callback(false, JSON.parse(evt.target.response));
+    });
+
+    xhr.addEventListener('error', function() {
+      callback(true);
+    });
+
+    xhr.addEventListener('timeout', function() {
+      callback(true);
+    });
+
+    xhr.open('GET', url +
+      '?from=' + (params.from || 0) +
+      '&to=' + (params.to || Infinity) +
+      '&filter=' + (params.filter || 'default'));
+
+    xhr.timeout = 10000;
+    xhr.send();
+  }
+
+  /**
    * Коллбэк, отрабатывающий при загрузке/ошибке загрузки/таймауте загрузки картинки
    * @callback LoadImageCallback
    * @param {boolean} error - true при ошибке и таймауте, false при успешной загрузке, см. функцию onImageLoad
@@ -63,6 +93,7 @@ define('load', function() {
 
   return {
     requestJsonp: requestJsonp,
+    callServer: callServer,
     loadImg: loadImg
   };
 });
