@@ -197,13 +197,14 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
       XhrParams.to = pageNumber * PAGE_SIZE + PAGE_SIZE;
 
       pictureContainer.innerHTML = '';
-
       Gallery.pictures = null;
     } else {
       XhrParams.filter = localStorage.getItem(filterStorageKey) || DEFAULT_FILTER;
       filterButton = filterForm.querySelector('#' + XhrParams.filter);
 
-      filterButton.checked = Boolean(filterButton);
+      if(filterButton) {
+        filterButton.checked = true;
+      }
     }
 
     loadPictures();
