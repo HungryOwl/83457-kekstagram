@@ -392,6 +392,9 @@ define(['browser-cookies', './resizer'], function(browserCookies, Resizer) {
 
   filterForm.addEventListener('submit', setCookie);
 
+  /**
+   * Устанавливаем значения полей формы (значения берем из объекта currentResizer)
+   */
   function setFormValues() {
     var resizerConstraint = currentResizer.getConstraint();
 
@@ -400,6 +403,9 @@ define(['browser-cookies', './resizer'], function(browserCookies, Resizer) {
     resizeSize.value = Math.round(resizerConstraint.side);
   }
 
+  /**
+   * Обновляем значения в объекте currentResizer
+   */
   function setResizerSize() {
     var leftSide = parseInt(resizeLeftSide.value, 10);
     var topSide = parseInt(resizeTopSide.value, 10);
