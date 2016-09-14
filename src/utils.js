@@ -35,7 +35,7 @@ define('utils', function() {
   }
 
   /**
-   * Троттлим что-то
+   * Троттлим что-то (троттлинг тут)
    * @param  {callback} callback    функция, которая будет троттлиться
    * @param  {number}   time        время троттлинга
    */
