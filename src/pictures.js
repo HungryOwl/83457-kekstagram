@@ -182,7 +182,7 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
   }
 
   /**
-   * Настраиваем фильтры по атрибуту for у метки
+   * Настраиваем фильтры по атрибуту for у метки, записываем фильтры в localStorage
    * @param {string} filter атрибут for у метки
    */
   function setFilter(filter) {
