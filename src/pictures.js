@@ -71,12 +71,41 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
     filter: DEFAULT_FILTER
   };
 
+  function Pictures() {
+    /*
+     * Прячем фильтры перед отрисовкой
+     */
+    filterForm.classList.add('hidden');
+
+    this
+      .bindListeners()
+      .enableFilters()
+      .setFilter();
+
+    window.addEventListener('scroll', utils.throttle(this.renderNextPage, 50));
+  }
+
+  Pictures.prototype.bindListeners = function() {
+    this.renderPictures = this.renderPictures.bind(this);
+    this.showPictures = this.showPictures.bind(this);
+    this.fillEmptySpaceOnScreen = this.fillEmptySpaceOnScreen.bind(this);
+    this.isScreenFilled = this.isScreenFilled.bind(this);
+    this.isNextPageAvailable = this.isNextPageAvailable.bind(this);
+    this.renderNextPage = this.renderNextPage.bind(this);
+    this.enableFilters = this.enableFilters.bind(this);
+    this.getFilter = this.getFilter.bind(this);
+    this.setFilter = this.setFilter.bind(this);
+
+    return this;
+  };
+
   /**
    * Отрисовываем картинки, пробегаясь по массиву с данными
    * @param  {Array.<objects>} pictures Массив объектов, полученных по XMLHttpRequest
    */
-  function renderPictures(pictures) {
+  Pictures.prototype.renderPictures = function(pictures) {
     window.pictures = pictures;
+    console.log('window.pictures ', window.pictures);
 
     var pictureCollection = document.createDocumentFragment();
     var pictureNumber = XhrParams.from;
@@ -89,45 +118,45 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
     });
 
     pictureContainer.appendChild(pictureCollection);
-  }
+  };
 
   /**
    * Грузим и рендерим на страницу фото при загрузке, коллбэк функции callServer
    * @param  {boolean}         error     Обработка ошибки загрузки XMLHttpRequest
    * @param  {Array.<Object>}  pictures  Массив объектов, поллученных по XMLHttpRequest
    */
-  function showPictures(error, pictures) {
+  Pictures.prototype.showPictures = function(error, pictures) {
     if(error) {
       console.log('Данные по XMLHttpRequest не загрузились');
     } else {
       pictureData = pictures;
 
-      renderPictures(pictures);
+      this.renderPictures(pictures);
       Gallery.setPictures(pictureData);
 
       if(filterForm.classList.contains('hidden')) {
         filterForm.classList.remove('hidden');
       }
     }
-  }
+  };
 
   /**
    * Загружаем данные с картинками по XMLHttpRequest
    */
-  function loadPictures() {
-    load.callServer(PICTURES_LOAD, XhrParams, showPictures);
-  }
+  Pictures.prototype.loadPictures = function() {
+    load.callServer(PICTURES_LOAD, XhrParams, this.showPictures);
+  };
 
   /**
    * Проверяем, заполнен ли экран
    * @return {Boolean} true - заполнен
    *                   false - нет
    */
-  function isScreenFilled() {
+  Pictures.prototype.isScreenFilled = function() {
     var footerPosition = footer.getBoundingClientRect();
 
     return footerPosition.top - window.innerHeight > 0;
-  }
+  };
 
   /**
    * Проверяем, доступна ли следующая страница
@@ -136,51 +165,61 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
    * @return {Boolean}         true       - доступна (длина масива / размер страницы = 1)
    *                           false      - недоступна (длина масива / размер страницы < 1)
    */
-  function isNextPageAvailable(picturesData, pageSize) {
+  Pictures.prototype.isNextPageAvailable = function(picturesData, pageSize) {
+    console.log('picturesData в isNextPageAvailable ', picturesData);
     return picturesData.length / pageSize === 1;
-  }
+  };
 
   /**
    * Грузим следующую пачку фото на страницу
    */
-  function loadNextPage() {
+  Pictures.prototype.loadNextPage = function() {
     pageNumber++;
     XhrParams.from = pageNumber * PAGE_SIZE;
     XhrParams.to = pageNumber * PAGE_SIZE + PAGE_SIZE;
 
-    loadPictures();
-  }
+    this.loadPictures();
+  };
 
   /**
    * Рендерим следующую пачку фото на страницу если доступен следующий кусок данных
    */
-  function renderNextPage() {
-    if(isNextPageAvailable(window.pictures, PAGE_SIZE)) {
-      loadNextPage();
+  Pictures.prototype.renderNextPage = function() {
+    if(this.isNextPageAvailable(window.pictures, PAGE_SIZE)) {
+      this.loadNextPage();
     }
-  }
+  };
+
+  /**
+   * Проверяем, заполнен ли экран - callback для таймаута в fillEmptySpaceOnScreen
+   * @param  {number} timerId Id таймаута, по которому он будет сброшен
+   * @return {Function}       Проверяем, заполнен ли экран
+   */
+  Pictures.prototype.check = function(timerId) {
+    return function() {
+      //Если экран не заполнен и доступен следующий пак данных,
+      //показываем следующий пак фоток с помощью рекурсивного setTimeout
+      if(!this.isScreenFilled() && this.isNextPageAvailable(window.pictures, PAGE_SIZE)) {
+        setTimeout(this.check(timerId), 50);
+      }
+
+      this.loadNextPage();
+      clearTimeout(timerId);
+    }.bind(this);
+  };
 
   /**
    * Заполняем оставшуюся часть пустого экрана при первой загрузке
    */
-  function fillEmptySpaceOnScreen() {
-    var renderTimeout = setTimeout(function check() {
-      //Если экран не заполнен и доступен следующий пак данных,
-      //показываем следующий пак фоток с помощью рекурсивного setTimeout
-      if(!isScreenFilled() && isNextPageAvailable(window.pictures, PAGE_SIZE)) {
-        setTimeout(check, 50);
-      }
-
-      loadNextPage();
-      clearTimeout(renderTimeout);
-    }, 50);
-  }
+  Pictures.prototype.fillEmptySpaceOnScreen = function() {
+    var renderTimeout = setTimeout(this.check(renderTimeout), 50);
+  };
 
   /**
    * Настраиваем фильтры по атрибуту for у метки, записываем фильтры в localStorage
    * @param {string} filter атрибут for у метки
    */
-  function setFilter(filter) {
+  Pictures.prototype.setFilter = function(filter) {
     var filterButton;
 
     if(filter) {
@@ -202,28 +241,32 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
       }
     }
 
-    loadPictures();
-    fillEmptySpaceOnScreen();
-  }
+    this.loadPictures();
+    this.fillEmptySpaceOnScreen();
+
+    return this;
+  };
 
   /**
-   * Ищем все наши метки и вешаем на них фильтры по событию change
+   * Устанавливаем фильтры - callback для функции enableFilters с листенером
+   * @param  {Object} evt Объект, описывающий событие и хранящий его параметры
    */
-  function enableFilters() {
-    filterForm.addEventListener('click', function(evt) {
-      if (evt.target.classList.contains('filters-item')) {
-        setFilter(evt.target.getAttribute('for'));
-      }
-    }, true);
-  }
+  Pictures.prototype.getFilter = function(evt) {
+    if (evt.target.classList.contains('filters-item')) {
+      this.setFilter(evt.target.getAttribute('for'));
+    }
 
-  /*
-   * Прячем фильтры перед отрисовкой
+    return this;
+  };
+
+  /**
+   * Ищем все наши метки и вешаем на них фильтры
    */
-  filterForm.classList.add('hidden');
+  Pictures.prototype.enableFilters = function() {
+    filterForm.addEventListener('click', this.getFilter, true);
 
-  enableFilters();
-  setFilter();
+    return this;
+  };
 
-  window.addEventListener('scroll', utils.throttle(renderNextPage, 50));
+  return new Pictures();
 });
