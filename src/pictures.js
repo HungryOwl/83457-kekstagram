@@ -91,13 +91,8 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
     pictureContainer.appendChild(pictureCollection);
   }
 
-  /*
-   * Прячем фильтры перед отрисовкой
-   */
-  filterForm.classList.add('hidden');
-
   /**
-   * Грузим и рендерим на страницу фото при загрузке
+   * Грузим и рендерим на страницу фото при загрузке, коллбэк функции callServer
    * @param  {boolean}         error     Обработка ошибки загрузки XMLHttpRequest
    * @param  {Array.<Object>}  pictures  Массив объектов, поллученных по XMLHttpRequest
    */
@@ -221,6 +216,11 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
       }
     }, true);
   }
+
+  /*
+   * Прячем фильтры перед отрисовкой
+   */
+  filterForm.classList.add('hidden');
 
   enableFilters();
   setFilter();

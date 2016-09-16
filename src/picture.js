@@ -11,17 +11,14 @@ define('pictureConstructor', ['./template', './gallery'], function(getPictureEle
   function Picture(data, pictureNumber) {
     this.data = data;
     this.element = getPictureElement(this.data);
+    this.pictureNumber = pictureNumber;
 
-    this.showGallery = function(evt) {
-      evt.preventDefault();
-      Gallery.show(pictureNumber);
-    };
-
+    this.showGallery = this.showGallery.bind(this);
     this.element.addEventListener('click', this.showGallery);
   }
 
-  Picture.prototype.showGallery = function(pictureNumber) {
-    Gallery.show(pictureNumber);
+  Picture.prototype.showGallery = function() {
+    Gallery.show(this.pictureNumber);
   };
 
   Picture.prototype.remove = function() {
