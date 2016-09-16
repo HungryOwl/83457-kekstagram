@@ -105,7 +105,6 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
    */
   Pictures.prototype.renderPictures = function(pictures) {
     window.pictures = pictures;
-    console.log('window.pictures ', window.pictures);
 
     var pictureCollection = document.createDocumentFragment();
     var pictureNumber = XhrParams.from;
@@ -166,7 +165,6 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
    *                           false      - недоступна (длина масива / размер страницы < 1)
    */
   Pictures.prototype.isNextPageAvailable = function(picturesData, pageSize) {
-    console.log('picturesData в isNextPageAvailable ', picturesData);
     return picturesData.length / pageSize === 1;
   };
 
