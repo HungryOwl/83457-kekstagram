@@ -159,8 +159,6 @@ define('galleryConstructor', ['./utils'], function(utils) {
     } else {
       this.hide();
     }
-
-    return this;
   };
 
   /**
