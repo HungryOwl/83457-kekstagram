@@ -189,6 +189,8 @@ define(['browser-cookies', './resizer'], function(browserCookies, Resizer) {
     Array.prototype.forEach.call(filterCollection, function(filter) {
       filter.checked = Boolean(filter.value === browserCookies.get(COOKIE_FILTER_NAME)) || filter.checked;
     });
+
+    filterImage.className = 'filter-image-preview ' + 'filter-' + browserCookies.get(COOKIE_FILTER_NAME);
   }
 
   /**
