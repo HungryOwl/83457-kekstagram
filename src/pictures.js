@@ -267,5 +267,7 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
     return this;
   };
 
+  console.log('Не знаю, как пофиксить с IE11, плак 8(');
+
   return new Pictures();
 });
