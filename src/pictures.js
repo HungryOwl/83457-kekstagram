@@ -120,7 +120,7 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
   };
 
   /**
-   * Грузим и рендерим на страницу фото при загрузке, коллбэк функции callServer
+   * Грузим и рендерим на страницу фото при загрузке - callback функции callServer
    * @param  {boolean}         error     Обработка ошибки загрузки XMLHttpRequest
    * @param  {Array.<Object>}  pictures  Массив объектов, поллученных по XMLHttpRequest
    */
@@ -132,6 +132,7 @@ define('pictures', ['./load', './utils', './gallery', './picture'], function(loa
 
       this.renderPictures(pictures);
       Gallery.setPictures(pictureData);
+      Gallery.onHashChange();
 
       if(filterForm.classList.contains('hidden')) {
         filterForm.classList.remove('hidden');

@@ -15,6 +15,8 @@ define('galleryConstructor', ['./utils'], function(utils) {
     this.comments = this.overlay.querySelector('.comments-count');
 
     this.bindListeners();
+
+    window.addEventListener('hashchange', this.onHashChange);
   }
 
   /**
@@ -28,6 +30,11 @@ define('galleryConstructor', ['./utils'], function(utils) {
     this.keyRightCheck = this.keyRightCheck.bind(this);
     this.keyLeftCheck = this.keyLeftCheck.bind(this);
     this.keyEscCheck = this.keyEscCheck.bind(this);
+
+    this.changeUrl = this.changeUrl.bind(this);
+    this.onHashChange = this.onHashChange.bind(this);
+
+    return this;
   };
 
   /**
@@ -48,28 +55,40 @@ define('galleryConstructor', ['./utils'], function(utils) {
    * Показываем следующее фото
    */
   Gallery.prototype.next = function() {
-    if(++this.activePicture > this.pictures.length - 1) {
-      this.activePicture = 0;
+    var nextSrc;
+
+    if(this.pictures[this.activePicture + 1]) {
+      nextSrc = this.pictures[this.activePicture + 1].url;
+    } else {
+      nextSrc = this.pictures[0].url;
     }
 
     this.setActivePicture(this.activePicture);
+    this.changeUrl(nextSrc);
   };
 
   /**
    * Показываем предыдущее фото
    */
   Gallery.prototype.prev = function() {
-    if(--this.activePicture < 0) {
-      this.activePicture = this.pictures.length - 1;
+    var prevSrc;
+
+    if(this.pictures[this.activePicture - 1]) {
+      prevSrc = this.pictures[this.activePicture - 1].url;
+    } else {
+      prevSrc = this.pictures[this.pictures.length - 1].url;
     }
 
     this.setActivePicture(this.activePicture);
+    this.changeUrl(prevSrc);
   };
 
   /**
    * Скрываем галерею, убираем листенеры
    */
   Gallery.prototype.hide = function() {
+    window.location.hash = '';
+
     this.overlay.classList.add('invisible');
     this.closeButton.removeEventListener('click', this.hide);
 
@@ -98,6 +117,50 @@ define('galleryConstructor', ['./utils'], function(utils) {
     window.addEventListener('keydown', this.keyRightCheck);
     window.addEventListener('keydown', this.keyLeftCheck);
     window.addEventListener('keydown', this.keyEscCheck);
+  };
+
+  Gallery.prototype.URL_MATCHER = /#photo\/(\S+)/;
+
+  /**
+   * Добавляем хэш в адресную строку
+   * @param  [string] photoUrl часть нашего хэша
+   */
+  Gallery.prototype.changeUrl = function(photoUrl) {
+    if(photoUrl) {
+      window.location.hash = 'photo/' + photoUrl;
+    } else {
+      window.location.hash = '';
+    }
+  };
+
+  /**
+   * Вскрываем нашу галерею по изменению хэша
+   */
+  Gallery.prototype.onHashChange = function() {
+    var hash = window.location.hash;
+    var photoUrl;
+    var urlMatchHash = this.URL_MATCHER.exec(hash);
+    var pictureIndex;
+
+    if(urlMatchHash) {
+      photoUrl = urlMatchHash[1];
+
+      if(this.pictures) {
+        this.pictures.forEach(function(pictureObject, pictureNumber) {
+          if(photoUrl === pictureObject.url) {
+            pictureIndex = pictureNumber;
+          }
+        });
+      }
+
+      if(pictureIndex || pictureIndex === 0) {
+        this.show(pictureIndex);
+      }
+    } else {
+      this.hide();
+    }
+
+    return this;
   };
 
   /**
