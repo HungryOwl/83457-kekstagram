@@ -14,15 +14,21 @@ define('pictureConstructor', ['./template', './gallery'], function(getPictureEle
     this.pictureNumber = pictureNumber;
 
     this.showGallery = this.showGallery.bind(this);
-    this.element.addEventListener('click', this.showGallery);
+    this.changeUrl = this.changeUrl.bind(this);
+
+    this.element.addEventListener('click', this.changeUrl);
   }
+
+  Picture.prototype.changeUrl = function() {
+    Gallery.changeUrl(this.data.url);
+  };
 
   Picture.prototype.showGallery = function() {
     Gallery.show(this.pictureNumber);
   };
 
   Picture.prototype.remove = function() {
-    this.element.removeEventListener('click', this.showGallery);
+    this.element.removeEventListener('click', this.changeUrl);
   };
 
   return Picture;
