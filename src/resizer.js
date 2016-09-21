@@ -485,7 +485,11 @@ define('Resizer', function() {
 
       requestAnimationFrame(function() {
         this.redraw();
-        window.dispatchEvent(new CustomEvent('resizerchange'));
+        var event = document.createEvent('CustomEvent');
+        event.initEvent('resizerchange', true, true);
+        window.dispatchEvent(event);
+
+        //window.dispatchEvent(new CustomEvent('resizerchange'));
       }.bind(this));
     },
 
